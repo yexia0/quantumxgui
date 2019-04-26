@@ -1,0 +1,29 @@
+[
+    {
+        "modelId": 123,
+        "description": "Qx",
+        "numKeys": 2,
+        "width": 400,
+        "height": 180,
+        "keyPositions": [
+            {
+
+            },
+            {
+                "x": 100,
+                "y": 100,
+                "width": 19.05,
+                "height": 19.05,
+                "rotation": 10
+            },
+            {
+                "x": 150,
+                "y": 100,
+                "width": 19.05,
+                "height": 19.05,
+                "rotation": 10
+            }
+        ]
+
+    }
+]

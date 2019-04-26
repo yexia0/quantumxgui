@@ -20,10 +20,12 @@ public class Main extends Application {
         Application.launch(args);
     }
 
+    private ConfigModel configModel;
     @Override
     public void start(final Stage stage)
     {
-        TestObj testObj = new TestObj();
+        configModel = new ConfigModel(stage);
+        configModel.newMap();
         WebView webView = new WebView();
         final WebEngine webEngine = webView.getEngine();
         WebConsoleListener.setDefaultListener(new WebConsoleListener(){
@@ -48,7 +50,7 @@ public class Main extends Application {
             {
                 if (newState == State.SUCCEEDED) {
                     JSObject window = (JSObject) webEngine.executeScript("window");
-                    window.setMember("testObj", testObj);
+                    window.setMember("model", configModel);
 
                     //stage.setTitle(webEngine.getTitle());
                 }
