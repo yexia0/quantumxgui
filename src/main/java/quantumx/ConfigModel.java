@@ -7,6 +7,8 @@ import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 
 public class ConfigModel {
@@ -29,14 +31,48 @@ public class ConfigModel {
         }
     }
 
-    public void newMap() {
+    public void newMap(short modelId, short numKeys) {
         layerMap = new LayerMap();
+        layerMap.setModelId(modelId);
         layerMap.setNumLayers(6);
-        layerMap.setNumKeys(20);
+        layerMap.setNumKeys(numKeys);
+//        layerMap.map[0][1].type.set(FunctionType.NORMAL);
+//        layerMap.map[0][1].value.normalKey.id.set((short)5);
+//        layerMap.map[0][2].type.set(FunctionType.MODIFIER);
+//        layerMap.map[0][2].value.modifierKey.map.set((short)0x76);
+//        layerMap.map[0][2].value.modifierKey.stickyThreshold.set((short)15);
+//        layerMap.map[0][3].type.set(FunctionType.LAYER);
+//        layerMap.map[0][3].value.layerKey.layer.set((short)0);
+//        layerMap.map[0][3].value.layerKey.stickyThreshold.set((short)10);
+//        layerMap.map[0][4].type.set(FunctionType.MACRO);
+//        layerMap.map[0][4].value.macroAddr.setS("hello world");
     }
 
     public void setNumLayers(short n) {
         layerMap.setNumLayers(n);
+    }
+
+    public int getNumLayers() {
+        return layerMap.getNumLayers();
+    }
+
+    public int getModelId() {
+        return layerMap.getModelId();
+    }
+
+    public int getNumKeys() {
+        return layerMap.getNumKeys();
+    }
+    public void setKey(short layer, short key, KeyFunction keyFunction) {
+        layerMap.map[layer][key] = keyFunction;
+    }
+
+    public KeyFunction getKey(short layer, short key) {
+        return layerMap.map[layer][key];
+    }
+
+    public void setNumKeys(short n) {
+        layerMap.setNumKeys(n);
     }
     public void saveToFile() {
         fileChooser.setTitle("Set save path for keymap file");
@@ -74,5 +110,24 @@ public class ConfigModel {
 
     public List<ProductInfo> getProductInfos() {
         return productInfos;
+    }
+
+
+    public KeyFunction newKey(String type) {
+        KeyFunction result = new KeyFunction();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(result.size());
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        result.setByteBuffer(byteBuffer, 0);
+        result.type.set(FunctionType.valueOf(type));
+        return result;
+    }
+
+    public String toHex(KeyFunction keyFunction) {
+        byte[] bytes = keyFunction.getByteBuffer().array();
+        StringBuffer stringBuffer = new StringBuffer();
+        for (byte b : bytes) {
+            stringBuffer.append(String.format("0x%02x ", b));
+        }
+        return stringBuffer.toString();
     }
 }

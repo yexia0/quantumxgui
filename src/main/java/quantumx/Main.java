@@ -25,8 +25,8 @@ public class Main extends Application {
     public void start(final Stage stage)
     {
         configModel = new ConfigModel(stage);
-        configModel.newMap();
         WebView webView = new WebView();
+        webView.setPrefHeight(650);
         final WebEngine webEngine = webView.getEngine();
         WebConsoleListener.setDefaultListener(new WebConsoleListener(){
             public void messageAdded(WebView webView, String message, int lineNumber, String sourceId) {
@@ -51,6 +51,8 @@ public class Main extends Application {
                 if (newState == State.SUCCEEDED) {
                     JSObject window = (JSObject) webEngine.executeScript("window");
                     window.setMember("model", configModel);
+                    window.setMember("products", configModel.getProductInfos());
+                    webEngine.executeScript("init()");
 
                     //stage.setTitle(webEngine.getTitle());
                 }
@@ -60,7 +62,7 @@ public class Main extends Application {
 
         VBox root = new VBox();
         root.getChildren().add(webView);
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, 1000, 650);
         stage.setScene(scene);
         stage.show();
     }

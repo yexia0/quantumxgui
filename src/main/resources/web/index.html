@@ -2,34 +2,37 @@
 <html>
 <header>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script>
-        function fun() {
-            var products = window.model.getProductInfos();
-            var product = products.get(0);
-            console.log(product.getDescription());
-            var scale = 0.75;
-            $("#keymap").css("width", (product.getWidth()*scale) + "mm").css("height", (product.getHeight()*scale)+"mm");
-            var keyPositions = product.getKeyPositions();
-            for (var j = 1; j <= product.getNumKeys(); j++) {
-                var keyPosition = keyPositions.get(j);
-                var child = $("<button>").text(j).css("position","absolute");
-                child.css("left", (keyPosition.getX() - keyPosition.getWidth() / 2) * scale +"mm");
-                child.css("bottom",(keyPosition.getY() - keyPosition.getHeight() / 2) * scale + "mm");
-                child.css("height", (keyPosition.getHeight() * scale) + "mm");
-                child.css("width", (keyPosition.getWidth() * scale) + "mm");
-                child.css("transform", "rotate(" + keyPosition.getRotation() + "deg)");
-                $("#keymap").append(child);
-            }
-
-        }
-    </script>
+    <link rel="stylesheet" href="css/quantum.css" />
+    <script src="js/quantum.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </header>
 <body>
-    <div onclick="fun()">hello world</div>
-    <button style='transform: rotate(20deg)' onclick="window.model.loadFromFile();">abc</button>
-    <div id="keymap" width="800" height="600">
-        <button style="position:absolute; top:100px; left:400px" >test</button>
+    <h4>
+        <span onclick="model.newMap();showModel(123);generateNavBar(3);showKey();">Quantum Keymap Manager</span>
+        <div class="dropdown" style="display:inline">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropdown button
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="menu">
+                <button class="dropdown-item" onclick="saveToFile();">Save to File...</button>
+                <button class="dropdown-item" onclick="loadFromFile()">Load from File...</button>
+                <button class="dropdown-item" onclick="deployToDevice()">Deploy</button>
+                <div class="dropdown-divider"></div>
+                <button class="dropdown-item" type="button" disabled>New Keymap</button>
+
+            </div>
+        </div>
+    </h4>
+
+    <ul class="nav nav-tabs" id="layernav">
+        <li class="nav-item">
+            <a class="nav-link disabled" href="#">Product Model not Loaded</a>
+        </li>
+    </ul>
+    <div id="keymap">
     </div>
+    <div id="editor" width="1000" height="100"></div>
 </body>
 </html>

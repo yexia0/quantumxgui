@@ -93,14 +93,15 @@ public class LayerMap {
         buffer.putShort(numLayers);
         buffer.putShort(numKeys);
         offset += 4;
+        System.err.println(numLayers);
+        System.err.println(numKeys);
         for (int i = 0; i < numLayers; i++) {
             for (int j = 0; j <= numKeys; j++) {
-                buffer.put(map[i][j].getByteBuffer());
+                buffer.put(map[i][j].getByteBuffer().array());
                 offset += map[i][j].size();
             }
         }
-
-
+        System.err.println(offset);
 
         buffer.putShort(strOffset);
         offset += 2;
@@ -111,6 +112,9 @@ public class LayerMap {
 
         byte[] result = new byte[offset];
         System.arraycopy(buffer.array(), 0, result, 0, offset);
+        for (byte b : result) {
+            System.err.printf("%02x ", b);
+        }
         return result;
     }
 
