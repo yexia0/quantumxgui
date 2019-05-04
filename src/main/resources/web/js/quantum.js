@@ -133,10 +133,10 @@ function generateNavBar(numLayers) {
     layerNav.data("layer", numLayers);
     layerNav.empty();
     for (var i = 0; i < numLayers; i++) {
-        var layerTab = $("<li>").addClass("nav-item").append($("<a>").addClass("nav-link").text("Layer " + i).data("layer", i)).click(selectLayerCallback);
+        var layerTab = $("<li>").addClass("nav-item").append($("<a>").addClass("nav-link").attr("href", "#").text("Layer " + i).data("layer", i)).click(selectLayerCallback);
         layerNav.append(layerTab);
     }
-    var trimTab = $("<li>").addClass("nav-item").append($("<a>").addClass("nav-link").text("-").data("layers", numLayers)).click(function (e) {
+    var trimTab = $("<li>").addClass("nav-item").append($("<a>").addClass("nav-link").attr("href", "#").text("-").data("layers", numLayers)).click(function (e) {
                           var n = $(e.target).data("layers");
                           if (n > 1) {
                             generateNavBar(n-1);
@@ -144,7 +144,7 @@ function generateNavBar(numLayers) {
                             }
                       } );
     layerNav.append(trimTab)
-    var appendTab = $("<li>").addClass("nav-item").append($("<a>").addClass("nav-link").text("+").data("layers", numLayers)).click(function (e) {
+    var appendTab = $("<li>").addClass("nav-item").append($("<a>").addClass("nav-link").attr("href", "#").text("+").data("layers", numLayers)).click(function (e) {
         var n = $(e.target).data("layers");
         if (n < 6) {
             generateNavBar(n+1);
