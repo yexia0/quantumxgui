@@ -1,10 +1,11 @@
 var products;
 var product;
+var scale;
 
 function init() {
     console.log("init");
     for (var i = 0; i < products.size(); i++) {
-        var newKeymapButton = $("<a>").text(products.get(i).getDescription()).addClass("dropdown-item").data("modelId", products.get(i).getModelId()).click(newKeymap);
+        var newKeymapButton = $("<a>").attr("href", "#").text(products.get(i).getDescription()).addClass("dropdown-item").data("modelId", products.get(i).getModelId()).click(newKeymap);
         $("#menu").append(newKeymapButton);
     }
 }
@@ -26,7 +27,7 @@ function newKeymap() {
         model.newMap(modelId, product.getNumKeys());
         showModel(modelId);
         generateNavBar(model.getNumLayers());
-        showKey();
+        displayKey();
     }
 }
 
@@ -40,7 +41,7 @@ function loadFromFile() {
     if (assignProduct(modelId) != undefined) {
         showModel(modelId);
         generateNavBar(model.getNumLayers());
-        showKey();
+        displayKey();
     }
 }
 
@@ -63,7 +64,7 @@ function showModel(modelId) {
             console.log(product.getDescription());
             window.model.setNumKeys(product.getNumKeys());
             var width = 1000;
-            var scale = width / product.getWidth()
+            scale = width / product.getWidth();
             var height = product.getHeight() * scale;
             $("#keymap").css("width", width).css("height", height).css("position", "relative");
             $("#keymap").empty();
@@ -86,14 +87,110 @@ function showModel(modelId) {
     }
 }
 
-function showKey() {
+function displayKey() {
     var activeLayer = getActiveLayer();
     var numKeys = product.getNumKeys();
     for (var i = 1; i <= numKeys; i++) {
-        console.log("show key");
-        $("#key" + i).text(model.getKey(activeLayer, i));
-        console.log(model.getKey(activeLayer, i));
+        var keyFunction = model.getKey(activeLayer, i);
+        var displayContainer = $("#key" + i);
+        displayKeyStyle(displayContainer, keyFunction);
     }
+}
+
+function getTextSize(str) {
+    if (str.length == 1) {
+        return 8;
+    } else if (str.length <= 3) {
+        return 6;
+    } else {
+        return 3.5;
+    }
+}
+function displayKeyStyle(container, keyFunction) {
+    container.empty();
+    container.removeClass("nopKey normalKey modifierKey transKey comboKey layerKey defaultLayerKey resetOneshotKey bootKey macroKey");
+    var keyType = keyFunction.type.get().toString();
+    switch (keyType) {
+        case "NORMAL":
+            var value = keyFunction.value.normalKey.id.get().toString();
+            var showText = keyCodeToText(value);
+            var textSize = getTextSize(showText);
+            container.text(showText).addClass("normalKey").css("font-size", textSize*scale + "px");
+            break;
+        case "COMBO":
+            var value = keyFunction.value.comboKey.id.get().toString();
+            var modifierMap = keyFunction.value.comboKey.modifierMap.get();
+            container.empty();
+
+            var showText = keyCodeToText(value);
+            var textSize = getTextSize(showText);
+            container.addClass("comboKey").css("font-size", textSize*scale + "px");
+            container.text(showText);
+            if ((modifierMap & 0x11) != 0) {
+                container.append($("<span>").addClass("showtag").css("top",0).css("left", 0).text("C"));
+            }
+            if ((modifierMap & 0x22) != 0) {
+                container.append($("<span>").addClass("showtag").css("top",0).css("right", 0).text("S"));
+            }
+            if ((modifierMap & 0x44) != 0) {
+                container.append($("<span>").addClass("showtag").css("bottom",0).css("left", 0).text("A"));
+            }
+            if ((modifierMap & 0x88) != 0) {
+                container.append($("<span>").addClass("showtag").css("bottom",0).css("right", 0).text("G"));
+            }
+            break;
+        case "MODIFIER":
+            var map = keyFunction.value.modifierKey.map.get();
+            var showText = modifierCodeToText(map);
+            var textSize = getTextSize(showText);
+            container.text(showText).addClass("modifierKey").css("font-size", textSize*scale + "px");
+            break;
+        case "LAYER":
+            var layer = keyFunction.value.layerKey.layer.get();
+            var showText = "Layer " + layer;
+            var textSize = getTextSize(showText);
+            container.addClass("layerKey").css("font-size", textSize*scale + "px").text(showText);
+            break;
+        case "DFT_LAYER":
+            var defaultLayer = keyFunction.value.defaultLayer.get();
+            var showText = "Default Layer " + defaultLayer;
+            var textSize = getTextSize(showText);
+            container.text(showText).addClass("defaultLayerKey").css("font-size", textSize*scale + "px");
+            break;
+        case "NOP":
+            var showText = "(Empty)"
+            var textSize = getTextSize(showText);
+            container.text(showText).addClass("nopKey").css("font-size", textSize*scale + "px");
+            break;
+        case "TRANS":
+            var showText = "Trans"
+            var textSize = getTextSize(showText);
+            container.text(showText).addClass("transKey").css("font-size", textSize*scale + "px");
+            break;
+        case "BOOT":
+            var showText = "Boot"
+            var textSize = getTextSize(showText);
+            container.text(showText).addClass("bootKey").css("font-size", textSize*scale + "px");
+            break;
+        case "RESET_ONESHOT":
+            var showText = "Reset Oneshot"
+            var textSize = getTextSize(showText);
+            container.text(showText).addClass("resetOneshotKey").css("font-size", textSize*scale + "px");
+            break;
+
+        case "MACRO":
+            var showText = keyFunction.value.macroAddr.getS();
+            if (showText.length >= 8) {
+                showText = "[Macro]";
+            }
+            container.empty();
+            container.append($("<span>").addClass("showtag").css("left",0).css("top", 0).text("M"));
+            container.append(showText).addClass("macroKey").css("font-size", 3.5*scale + "px");
+            break;
+        default:
+            container.text(keyFunction);
+    }
+
 }
 
 function getActiveLayer() {
@@ -120,7 +217,7 @@ function selectLayer(activeLayer) {
             $(this).addClass("active");
         }
     });
-    showKey();
+    displayKey();
     clearKeyInEditor();
     clearKeyPressed();
 }
@@ -443,102 +540,10 @@ function loadKeyToEditor(layer, key) {
 
     var keySelector = $("<select>").attr("id", "keySelector");
     keySelector.append(newOption(0, "Select Key..."));
-    keySelector.append(newOption(4, "A"));
-    keySelector.append(newOption(5, "B"));
-    keySelector.append(newOption(6, "C"));
-    keySelector.append(newOption(7, "D"));
-    keySelector.append(newOption(8, "E"));
-    keySelector.append(newOption(9, "F"));
-    keySelector.append(newOption(10, "G"));
-    keySelector.append(newOption(11, "H"));
-    keySelector.append(newOption(12, "I"));
-    keySelector.append(newOption(13, "J"));
-    keySelector.append(newOption(14, "K"));
-    keySelector.append(newOption(15, "L"));
-    keySelector.append(newOption(16, "M"));
-    keySelector.append(newOption(17, "N"));
-    keySelector.append(newOption(18, "O"));
-    keySelector.append(newOption(19, "P"));
-    keySelector.append(newOption(20, "Q"));
-    keySelector.append(newOption(21, "R"));
-    keySelector.append(newOption(22, "S"));
-    keySelector.append(newOption(23, "T"));
-    keySelector.append(newOption(24, "U"));
-    keySelector.append(newOption(25, "V"));
-    keySelector.append(newOption(26, "W"));
-    keySelector.append(newOption(27, "X"));
-    keySelector.append(newOption(28, "Y"));
-    keySelector.append(newOption(29, "Z"));
-    keySelector.append(newOption(30, "1"));
-    keySelector.append(newOption(31, "2"));
-    keySelector.append(newOption(32, "3"));
-    keySelector.append(newOption(33, "4"));
-    keySelector.append(newOption(34, "5"));
-    keySelector.append(newOption(35, "6"));
-    keySelector.append(newOption(36, "7"));
-    keySelector.append(newOption(37, "8"));
-    keySelector.append(newOption(38, "9"));
-    keySelector.append(newOption(39, "0"));
-    keySelector.append(newOption(40, "Enter"));
-    keySelector.append(newOption(41, "Esc"));
-    keySelector.append(newOption(42, "Backspace"));
-    keySelector.append(newOption(43, "Tab"));
-    keySelector.append(newOption(44, "Space"));
-    keySelector.append(newOption(45, "-"));
-    keySelector.append(newOption(46, "="));
-    keySelector.append(newOption(47, "["));
-    keySelector.append(newOption(48, "]"));
-    keySelector.append(newOption(49, "\\"));
-    keySelector.append(newOption(50, "Number"));
-    keySelector.append(newOption(51, ";"));
-    keySelector.append(newOption(52, "'"));
-    keySelector.append(newOption(53, "`"));
-    keySelector.append(newOption(54, ","));
-    keySelector.append(newOption(55, "."));
-    keySelector.append(newOption(56, "/"));
-    keySelector.append(newOption(57, "Caps Lock"));
-    keySelector.append(newOption(58, "F1"));
-    keySelector.append(newOption(59, "F2"));
-    keySelector.append(newOption(60, "F3"));
-    keySelector.append(newOption(61, "F4"));
-    keySelector.append(newOption(62, "F5"));
-    keySelector.append(newOption(63, "F6"));
-    keySelector.append(newOption(64, "F7"));
-    keySelector.append(newOption(65, "F8"));
-    keySelector.append(newOption(66, "F9"));
-    keySelector.append(newOption(67, "F10"));
-    keySelector.append(newOption(68, "F11"));
-    keySelector.append(newOption(69, "F12"));
-    keySelector.append(newOption(70, "Print Screen"));
-    keySelector.append(newOption(71, "Scroll Lock"));
-    keySelector.append(newOption(72, "Pause"));
-    keySelector.append(newOption(73, "Insert"));
-    keySelector.append(newOption(74, "Home"));
-    keySelector.append(newOption(75, "Page Up"));
-    keySelector.append(newOption(76, "Delete"));
-    keySelector.append(newOption(77, "End"));
-    keySelector.append(newOption(78, "Page Down"));
-    keySelector.append(newOption(79, "Right"));
-    keySelector.append(newOption(80, "Left"));
-    keySelector.append(newOption(81, "Down"));
-    keySelector.append(newOption(82, "Up"));
-    keySelector.append(newOption(83, "Num Lock"));
-    keySelector.append(newOption(84, "Keypad /"));
-    keySelector.append(newOption(85, "Keypad *"));
-    keySelector.append(newOption(86, "Keypad -"));
-    keySelector.append(newOption(87, "Keypad +"));
-    keySelector.append(newOption(88, "Keypad Enter"));
-    keySelector.append(newOption(89, "Keypad 1"));
-    keySelector.append(newOption(90, "Keypad 2"));
-    keySelector.append(newOption(91, "Keypad 3"));
-    keySelector.append(newOption(92, "Keypad 4"));
-    keySelector.append(newOption(93, "Keypad 5"));
-    keySelector.append(newOption(94, "Keypad 6"));
-    keySelector.append(newOption(95, "Keypad 7"));
-    keySelector.append(newOption(96, "Keypad 8"));
-    keySelector.append(newOption(97, "Keypad 9"));
-    keySelector.append(newOption(98, "Keypad 0"));
-    keySelector.append(newOption(99, "Keypad ."));
+
+    for (var k = 4; k <= 99; k++) {
+        keySelector.append(newOption(k, keyCodeToText(k)));
+    }
 
     var thresholdSelector = $("<select>").attr("id", "thresholdSelector");
     thresholdSelector.append(newOption(-1, "Select Sticky Threshold..."));
@@ -651,7 +656,7 @@ function saveEditorKey() {
     }
     model.setKey(layer, key, newKey);
 
-    showKey();
+    displayKey();
 }
 
 function closeEditorKey() {
