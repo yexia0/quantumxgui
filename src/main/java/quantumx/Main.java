@@ -17,6 +17,10 @@ import static javafx.concurrent.Worker.State;
 
 public class Main extends Application {
     public static void main(String[] args) {
+        System.loadLibrary("connection");
+        for (String s : new HidConnection().open()) {
+            System.err.println(s);
+        }
         Application.launch(args);
     }
 
