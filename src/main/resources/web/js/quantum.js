@@ -31,6 +31,10 @@ function newKeymap() {
     }
 }
 
+function deployToDevice() {
+    model.deploy();
+}
+
 function saveToFile() {
     model.saveToFile();
 }

@@ -20,7 +20,7 @@ JNIEXPORT jboolean JNICALL Java_quantumx_HidConnection_open
  * Method:    cgetModels
  * Signature: ()[S
  */
-JNIEXPORT jshortArray JNICALL Java_quantumx_HidConnection_getModels
+JNIEXPORT jshortArray JNICALL Java_quantumx_HidConnection_cgetModels
   (JNIEnv *, jobject);
 
 /*

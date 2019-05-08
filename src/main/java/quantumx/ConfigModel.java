@@ -36,16 +36,6 @@ public class ConfigModel {
         layerMap.setModelId(modelId);
         layerMap.setNumLayers(6);
         layerMap.setNumKeys(numKeys);
-//        layerMap.map[0][1].type.set(FunctionType.NORMAL);
-//        layerMap.map[0][1].value.normalKey.id.set((short)5);
-//        layerMap.map[0][2].type.set(FunctionType.MODIFIER);
-//        layerMap.map[0][2].value.modifierKey.map.set((short)0x76);
-//        layerMap.map[0][2].value.modifierKey.stickyThreshold.set((short)15);
-//        layerMap.map[0][3].type.set(FunctionType.LAYER);
-//        layerMap.map[0][3].value.layerKey.layer.set((short)0);
-//        layerMap.map[0][3].value.layerKey.stickyThreshold.set((short)10);
-//        layerMap.map[0][4].type.set(FunctionType.MACRO);
-//        layerMap.map[0][4].value.macroAddr.setS("hello world");
     }
 
     public void setNumLayers(short n) {
@@ -107,7 +97,14 @@ public class ConfigModel {
         }
     }
 
-
+    public void deploy() {
+        HidConnection hidConnection = HidConnection.getInstance();
+        try {
+            hidConnection.sendRequest((short)1152, layerMap.toBytes(), 100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     public List<ProductInfo> getProductInfos() {
         return productInfos;
     }

@@ -39,7 +39,7 @@
 
 #define BUFFER_SIZE 64
 
-//#define printf(...) // comment this out to get lots of info printed
+#define printf(...) // comment this out to get lots of info printed
 
 
 // a list of all opened HID devices, so the caller can
@@ -50,6 +50,7 @@ static hid_t *first_hid = NULL;
 static hid_t *last_hid = NULL;
 struct hid_struct {
 	IOHIDDeviceRef ref;
+	uint16_t model_id;
 	int open;
 	uint8_t buffer[BUFFER_SIZE];
 	buffer_t *first_buffer;
@@ -63,6 +64,8 @@ struct buffer_struct {
 	uint8_t buf[BUFFER_SIZE];
 };
 
+
+
 // private functions, not intended to be used from outside this file
 static void add_hid(hid_t *);
 static hid_t * get_hid(int);
@@ -73,9 +76,20 @@ static void detach_callback(void *, IOReturn, void *hid_mgr, IOHIDDeviceRef dev)
 static void timeout_callback(CFRunLoopTimerRef, void *);
 static void input_callback(void *, IOReturn, void *, IOHIDReportType,
 	 uint32_t, uint8_t *, CFIndex);
+static void refresh_manager(void);
 
-
-
+int get_models(uint16_t *buf, int limit) {
+    refresh_manager();
+    int count = 0;
+    hid_t *p = first_hid;
+    while (p != NULL && count < limit) {
+        *buf = p->model_id;
+        buf++;
+        count++;
+        p = p->next;
+    }
+    return count;
+}
 //  rawhid_recv - receive a packet
 //    Inputs:
 //	num = device to receive from (zero based)
@@ -85,7 +99,7 @@ static void input_callback(void *, IOReturn, void *, IOHIDReportType,
 //    Output:
 //	number of bytes received, or -1 on error
 //
-int rawhid_recv(int num, void *buf, int len, int timeout)
+int rawhid_recv(int model_id, void *buf, int len, int timeout)
 {
 	hid_t *hid;
 	buffer_t *b;
@@ -94,7 +108,7 @@ int rawhid_recv(int num, void *buf, int len, int timeout)
 	int ret=0, timeout_occurred=0;
 
 	if (len < 1) return 0;
-	hid = get_hid(num);
+	hid = get_hid(model_id);
 	if (!hid || !hid->open) return -1;
 	if ((b = hid->first_buffer) != NULL) {
 		if (len > b->len) len = b->len;
@@ -186,12 +200,12 @@ void output_callback(void *context, IOReturn ret, void *sender,
 //    Output:
 //	number of bytes sent, or -1 on error
 //
-int rawhid_send(int num, void *buf, int len, int timeout)
+int rawhid_send(int model_id, void *buf, int len, int timeout)
 {
 	hid_t *hid;
 	int result=-100;
 
-	hid = get_hid(num);
+	hid = get_hid(model_id);
 	if (!hid || !hid->open) return -1;
 #if 1
 	#warning "Send timeout not implemented on MACOSX"
@@ -311,6 +325,9 @@ int rawhid_open(int max, int vid, int pid, int usage_page, int usage)
 	return count;
 }
 
+static void refresh_manager() {
+	while (CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, true) == kCFRunLoopRunHandledSource);
+}
 
 //  rawhid_close - close a device
 //
@@ -344,11 +361,19 @@ static void add_hid(hid_t *h)
 }
 
 
-static hid_t * get_hid(int num)
+static hid_t * get_hid(int model_id)
 {
-	hid_t *p;
-	for (p = first_hid; p && num > 0; p = p->next, num--) ;
-	return p;
+    hid_t *p = first_hid;
+    while (p != NULL) {
+        if (p->model_id == model_id) {
+            return p;
+        }
+        p = p->next;
+    }
+    return NULL;
+	//hid_t *p;
+	//for (p = first_hid; p && num > 0; p = p->next, num--) ;
+	//return p;
 }
 
 
@@ -385,6 +410,19 @@ static void detach_callback(void *context, IOReturn r, void *hid_mgr, IOHIDDevic
 	for (p = first_hid; p; p = p->next) {
 		if (p->ref == dev) {
 			p->open = 0;
+			if (p == first_hid) {
+			    first_hid = p->next;
+			}
+			if (p == last_hid) {
+			    last_hid = p->prev;
+			}
+			if (p->prev != NULL) {
+			    p->prev->next = p->next;
+			}
+			if (p->next != NULL) {
+			    p->next->prev = p->prev;
+			}
+			free(p);
 			CFRunLoopStop(CFRunLoopGetCurrent());
 			return;
 		}
@@ -408,7 +446,7 @@ static void attach_callback(void *context, IOReturn r, void *hid_mgr, IOHIDDevic
 	CFTypeRef pidRef = IOHIDDeviceGetProperty(dev, CFSTR(kIOHIDProductIDKey));
 	uint16_t product_id = 0;
 	CFNumberGetValue(pidRef, CFNumberGetType(pidRef), &product_id);
-	
+	h->model_id = product_id;
 	printf("Product id: %hu", product_id);
 	h->open = 1;
 	add_hid(h);
