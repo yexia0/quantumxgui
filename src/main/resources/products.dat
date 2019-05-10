@@ -1,7 +1,7 @@
 [
     {
-        "modelId": 123,
-        "description": "Qx",
+        "modelId": 1151,
+        "description": "Demo Qx",
         "numKeys": 4,
         "width": 400,
         "height": 180,
@@ -41,7 +41,7 @@
 
     },
     {
-        "modelId": 125,
+        "modelId": 1152,
         "description": "Qx max",
         "numKeys": 82,
         "width": 400,

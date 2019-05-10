@@ -12,6 +12,8 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 public class ConfigModel {
+    private byte COMMAND_SET_KEYMAP = 1;
+
     private Stage stage;
     private LayerMap layerMap;
     private static ObjectMapper mapper = new ObjectMapper();
@@ -100,7 +102,13 @@ public class ConfigModel {
     public void deploy() {
         HidConnection hidConnection = HidConnection.getInstance();
         try {
-            hidConnection.sendRequest((short)1152, layerMap.toBytes(), 100);
+            byte[] layerMapBytes = layerMap.toBytes();
+            short modelId = (short)(Byte.toUnsignedInt(layerMapBytes[0]) + 256*Byte.toUnsignedInt(layerMapBytes[1]));
+            System.err.println("model id:" + modelId);
+            byte[] message = new byte[layerMapBytes.length + 1];
+            message[0] = COMMAND_SET_KEYMAP;
+            System.arraycopy(layerMapBytes, 0, message, 1, layerMapBytes.length);
+            hidConnection.sendRequest(modelId, message, 100);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -101,7 +101,6 @@ public class LayerMap {
                 offset += map[i][j].size();
             }
         }
-        System.err.println(offset);
 
         buffer.putShort(strOffset);
         offset += 2;
@@ -115,6 +114,7 @@ public class LayerMap {
         for (byte b : result) {
             System.err.printf("%02x ", b);
         }
+        System.err.println();
         return result;
     }
 

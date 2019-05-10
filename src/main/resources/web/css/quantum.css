@@ -73,3 +73,7 @@ a:hover {
     font-size: 10px;
     line-height: 1em;
 }
+
+.card {
+    margin: 10px;
+}

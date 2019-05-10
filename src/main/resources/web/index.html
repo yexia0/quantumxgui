@@ -10,8 +10,8 @@
     <script src="js/bootstrap-4.0.0.min.js" crossorigin="anonymous"></script>
 </header>
 <body>
-    <h4>
-        <span onclick="model.newMap();showModel(123);generateNavBar(3);showKey();">Quantum Keymap Manager</span>
+    <div>
+        <span>Quantum Keymap Manager</span>
         <div class="dropdown" style="display:inline">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Dropdown button
@@ -25,15 +25,18 @@
 
             </div>
         </div>
-    </h4>
+    </div>
 
     <ul class="nav nav-tabs" id="layernav">
         <li class="nav-item">
-            <a class="nav-link disabled" href="#">Product Model not Loaded</a>
+            <a class="nav-link disabled" href="#">Keymap not Loaded</a>
         </li>
     </ul>
     <div id="keymap">
     </div>
-    <div id="editor" width="1000" height="100"></div>
+        <div>
+            <div id="editor" height="100"></div>
+        </div>
+
 </body>
 </html>
