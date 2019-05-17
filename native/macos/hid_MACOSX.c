@@ -35,11 +35,13 @@
 #include <IOKit/IOKitLib.h>
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hid/IOHIDKeys.h>
+#include <string.h>
 #include "hid.h"
+#include <time.h>
 
 #define BUFFER_SIZE 64
 
-#define printf(...) // comment this out to get lots of info printed
+//#define printf(...) // comment this out to get lots of info printed
 
 
 // a list of all opened HID devices, so the caller can
@@ -51,6 +53,7 @@ static hid_t *last_hid = NULL;
 struct hid_struct {
 	IOHIDDeviceRef ref;
 	uint16_t model_id;
+	const char *device_id;
 	int open;
 	uint8_t buffer[BUFFER_SIZE];
 	buffer_t *first_buffer;
@@ -68,7 +71,7 @@ struct buffer_struct {
 
 // private functions, not intended to be used from outside this file
 static void add_hid(hid_t *);
-static hid_t * get_hid(int);
+static hid_t * get_hid(const char *);
 static void free_all_hid(void);
 static void hid_close(hid_t *);
 static void attach_callback(void *, IOReturn, void *, IOHIDDeviceRef);
@@ -78,12 +81,12 @@ static void input_callback(void *, IOReturn, void *, IOHIDReportType,
 	 uint32_t, uint8_t *, CFIndex);
 static void refresh_manager(void);
 
-int get_models(uint16_t *buf, int limit) {
+int get_devices(const char**buf, int limit) {
     refresh_manager();
     int count = 0;
     hid_t *p = first_hid;
     while (p != NULL && count < limit) {
-        *buf = p->model_id;
+        *buf = p->device_id;
         buf++;
         count++;
         p = p->next;
@@ -99,7 +102,7 @@ int get_models(uint16_t *buf, int limit) {
 //    Output:
 //	number of bytes received, or -1 on error
 //
-int rawhid_recv(int model_id, void *buf, int len, int timeout)
+int rawhid_recv(const char *device_id, void *buf, int len, int timeout)
 {
 	hid_t *hid;
 	buffer_t *b;
@@ -108,7 +111,7 @@ int rawhid_recv(int model_id, void *buf, int len, int timeout)
 	int ret=0, timeout_occurred=0;
 
 	if (len < 1) return 0;
-	hid = get_hid(model_id);
+	hid = get_hid(device_id);
 	if (!hid || !hid->open) return -1;
 	if ((b = hid->first_buffer) != NULL) {
 		if (len > b->len) len = b->len;
@@ -200,12 +203,12 @@ void output_callback(void *context, IOReturn ret, void *sender,
 //    Output:
 //	number of bytes sent, or -1 on error
 //
-int rawhid_send(int model_id, void *buf, int len, int timeout)
+int rawhid_send(const char *device_id, void *buf, int len, int timeout)
 {
 	hid_t *hid;
 	int result=-100;
 
-	hid = get_hid(model_id);
+	hid = get_hid(device_id);
 	if (!hid || !hid->open) return -1;
 #if 1
 	#warning "Send timeout not implemented on MACOSX"
@@ -338,12 +341,12 @@ static void refresh_manager() {
 //
 void rawhid_close(int num)
 {
-	hid_t *hid;
-
-	hid = get_hid(num);
-	if (!hid || !hid->open) return;
-	hid_close(hid);
-	hid->open = 0;
+//	hid_t *hid;
+//
+//	hid = get_hid(num);
+//	if (!hid || !hid->open) return;
+//	hid_close(hid);
+//	hid->open = 0;
 }
 
 
@@ -361,11 +364,11 @@ static void add_hid(hid_t *h)
 }
 
 
-static hid_t * get_hid(int model_id)
+static hid_t * get_hid(const char *device_id)
 {
     hid_t *p = first_hid;
     while (p != NULL) {
-        if (p->model_id == model_id) {
+        if (strcmp(p->device_id, device_id) == 0) {
             return p;
         }
         p = p->next;
@@ -422,11 +425,24 @@ static void detach_callback(void *context, IOReturn r, void *hid_mgr, IOHIDDevic
 			if (p->next != NULL) {
 			    p->next->prev = p->prev;
 			}
+			free(p->device_id);
 			free(p);
 			CFRunLoopStop(CFRunLoopGetCurrent());
 			return;
 		}
 	}
+}
+
+static const char* rand_id() {
+    srand(time(NULL));
+    int len = 16;
+    char gen[] = {"abcdefghijklmnopqrstuvwxyz"};
+    char *result = malloc(len + 1);
+    for (int i = 0; i < len; i++) {
+        result[i] = gen[rand() % sizeof(gen)];
+    }
+    result[len] = '\0';
+    return result;
 }
 
 
@@ -449,6 +465,7 @@ static void attach_callback(void *context, IOReturn r, void *hid_mgr, IOHIDDevic
 	h->model_id = product_id;
 	printf("Product id: %hu", product_id);
 	h->open = 1;
+	h->device_id = rand_id();
 	add_hid(h);
 }
 

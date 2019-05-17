@@ -23,7 +23,7 @@ public class Main extends Application {
         int a = 0;
         while (a < 10000) {
             System.err.println("get models");
-            for (short s : hidConnection.getModels()) {
+            for (String s : hidConnection.getDevices()) {
                 System.err.println(s);
                 byte[] arr = new byte[64];
                 arr[0] = 'a';

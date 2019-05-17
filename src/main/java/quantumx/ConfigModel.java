@@ -103,12 +103,12 @@ public class ConfigModel {
         HidConnection hidConnection = HidConnection.getInstance();
         try {
             byte[] layerMapBytes = layerMap.toBytes();
-            short modelId = (short)(Byte.toUnsignedInt(layerMapBytes[0]) + 256*Byte.toUnsignedInt(layerMapBytes[1]));
-            System.err.println("model id:" + modelId);
+            String deviceId = hidConnection.getDevices()[0];
+            System.err.println("Device id:" + deviceId);
             byte[] message = new byte[layerMapBytes.length + 1];
             message[0] = COMMAND_SET_KEYMAP;
             System.arraycopy(layerMapBytes, 0, message, 1, layerMapBytes.length);
-            hidConnection.sendRequest(modelId, message, 100);
+            hidConnection.sendRequest(deviceId, message, 100);
         } catch (Exception e) {
             e.printStackTrace();
         }

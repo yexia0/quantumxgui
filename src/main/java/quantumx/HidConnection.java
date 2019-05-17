@@ -17,11 +17,11 @@ public class HidConnection {
         open();
     }
     public native synchronized boolean open();
-    public native short[] getModels();
-    private native byte[] receiveMessage(short modelId, int timeout);
-    private native boolean sendMessage(short modelId, byte[] msg, int timeout);
+    public native String[] getDevices();
+    private native byte[] receiveMessage(String deviceId, int timeout);
+    private native boolean sendMessage(String deviceId, byte[] msg, int timeout);
 
-    public synchronized byte[] sendRequest(short modelId, byte[] request, int timeout) throws NoResponseException {
+    public synchronized byte[] sendRequest(String deviceId, byte[] request, int timeout) throws NoResponseException {
         System.err.println("request size " + request.length);
         int reportSize = 64;
         int messageId = new Random(System.currentTimeMillis()).nextInt(65536);
@@ -42,14 +42,14 @@ public class HidConnection {
             buffer.putShort((short)messageId);
             buffer.put(seq);
             buffer.put(messageBytes, seq * chunkSize, Math.min(messageSize - seq * chunkSize, chunkSize));
-            boolean rc = sendMessage(modelId, buffer.array(), 100);
+            boolean rc = sendMessage(deviceId, buffer.array(), 100);
             if (!rc) {
                 throw new NoResponseException();
             }
         }
 
         while (true) {
-            byte[] buf = receiveMessage(modelId, timeout);
+            byte[] buf = receiveMessage(deviceId, timeout);
 
             if (buf == null) {
                 return null;
@@ -80,7 +80,7 @@ public class HidConnection {
                 int remaining = bodySize - 59;
                 expectedSeq += 1;
                 while (remaining > 0) {
-                    buf = receiveMessage(modelId, timeout);
+                    buf = receiveMessage(deviceId, timeout);
 
                     if (buf == null) {
                         return null;
