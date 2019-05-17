@@ -17,27 +17,27 @@ JNIEXPORT jboolean JNICALL Java_quantumx_HidConnection_open
 
 /*
  * Class:     quantumx_HidConnection
- * Method:    cgetModels
- * Signature: ()[S
+ * Method:    getDevices
+ * Signature: ()[Ljava/lang/String;
  */
-JNIEXPORT jshortArray JNICALL Java_quantumx_HidConnection_cgetModels
+JNIEXPORT jobjectArray JNICALL Java_quantumx_HidConnection_getDevices
   (JNIEnv *, jobject);
 
 /*
  * Class:     quantumx_HidConnection
  * Method:    receiveMessage
- * Signature: (SI)[B
+ * Signature: (Ljava/lang/String;I)[B
  */
 JNIEXPORT jbyteArray JNICALL Java_quantumx_HidConnection_receiveMessage
-  (JNIEnv *, jobject, jshort, jint);
+  (JNIEnv *, jobject, jstring, jint);
 
 /*
  * Class:     quantumx_HidConnection
  * Method:    sendMessage
- * Signature: (S[BI)Z
+ * Signature: (Ljava/lang/String;[BI)Z
  */
 JNIEXPORT jboolean JNICALL Java_quantumx_HidConnection_sendMessage
-  (JNIEnv *, jobject, jshort, jbyteArray, jint);
+  (JNIEnv *, jobject, jstring, jbyteArray, jint);
 
 #ifdef __cplusplus
 }
