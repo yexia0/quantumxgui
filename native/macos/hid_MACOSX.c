@@ -433,8 +433,12 @@ static void detach_callback(void *context, IOReturn r, void *hid_mgr, IOHIDDevic
 	}
 }
 
+static seed = 0;
 static const char* rand_id() {
-    srand(time(NULL));
+    if (seed == 0) {
+        srand(time(NULL));
+        seed = 1;
+    }
     int len = 16;
     char gen[] = {"abcdefghijklmnopqrstuvwxyz"};
     char *result = malloc(len + 1);
