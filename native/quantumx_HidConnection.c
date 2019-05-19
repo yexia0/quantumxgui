@@ -4,7 +4,7 @@
 
 JNIEXPORT jboolean JNICALL Java_quantumx_HidConnection_open
   (JNIEnv *env, jobject obj) {
-    rawhid_open(1, 0x16C0, -1, 0xFFAB, 0x0200);
+    rawhid_open(10, 0x16C0, 0x27DB, 0xFF11, 0x2509);
     return 1;
 }
 

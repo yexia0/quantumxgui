@@ -1,6 +1,6 @@
 [
     {
-        "modelId": 1151,
+        "modelId": 1111,
         "description": "Demo Qx",
         "numKeys": 4,
         "width": 400,
@@ -41,8 +41,8 @@
 
     },
     {
-        "modelId": 1152,
-        "description": "Qx max",
+        "modelId": 1,
+        "description": "Quantum X1",
         "numKeys": 82,
         "width": 400,
         "height": 180,
