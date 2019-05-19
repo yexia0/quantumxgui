@@ -13,6 +13,7 @@ import java.util.List;
 
 public class ConfigModel {
     private byte COMMAND_SET_KEYMAP = 1;
+    private byte COMMAND_GET_KEYMAP = 2;
 
     private Stage stage;
     private LayerMap layerMap;
@@ -108,7 +109,25 @@ public class ConfigModel {
             byte[] message = new byte[layerMapBytes.length + 1];
             message[0] = COMMAND_SET_KEYMAP;
             System.arraycopy(layerMapBytes, 0, message, 1, layerMapBytes.length);
-            hidConnection.sendRequest(deviceId, message, 100);
+            hidConnection.sendRequest(deviceId, message, 500);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadFromDevice() {
+        HidConnection hidConnection = HidConnection.getInstance();
+        try {
+            String deviceId = hidConnection.getDevices()[0];
+            System.err.println("Device id:" + deviceId);
+            byte[] message = new byte[1];
+            message[0] = COMMAND_GET_KEYMAP;
+            byte[] response = hidConnection.sendRequest(deviceId, message, 500);
+            System.err.println("response size " + response.length);
+            Utils.printByteArray(response);
+            if (response.length != 0) {
+                layerMap = LayerMap.fromBytes(response);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

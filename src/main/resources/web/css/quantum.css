@@ -77,3 +77,7 @@ a:hover {
 .card {
     margin: 10px;
 }
+
+body {
+    background-color: #C0C0C2;
+}

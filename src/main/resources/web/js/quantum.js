@@ -49,6 +49,18 @@ function loadFromFile() {
     }
 }
 
+function loadFromDevice() {
+    model.loadFromDevice();
+    var modelId = model.getModelId();
+    console.log(modelId);
+    if (assignProduct(modelId) != undefined) {
+        console.log("show")
+        showModel(modelId);
+        generateNavBar(model.getNumLayers());
+        displayKey();
+    }
+}
+
 function clearKeyPressed() {
     $("#keymap").find("button").removeClass("keypressed");
 }

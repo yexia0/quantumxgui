@@ -50,7 +50,6 @@ public class HidConnection {
 
         while (true) {
             byte[] buf = receiveMessage(deviceId, timeout);
-
             if (buf == null) {
                 return null;
             }
@@ -78,6 +77,7 @@ public class HidConnection {
             } else {
                 System.arraycopy(buf, 5, result, resPos, 59);
                 int remaining = bodySize - 59;
+                resPos += 59;
                 expectedSeq += 1;
                 while (remaining > 0) {
                     buf = receiveMessage(deviceId, timeout);
