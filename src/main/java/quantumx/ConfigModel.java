@@ -105,7 +105,7 @@ public class ConfigModel {
         try {
             byte[] layerMapBytes = layerMap.toBytes();
             String deviceId = hidConnection.getDevices()[0];
-            System.err.println("Device id:" + deviceId);
+            System.err.println("Device id: " + deviceId);
             byte[] message = new byte[layerMapBytes.length + 1];
             message[0] = COMMAND_SET_KEYMAP;
             System.arraycopy(layerMapBytes, 0, message, 1, layerMapBytes.length);
@@ -119,7 +119,7 @@ public class ConfigModel {
         HidConnection hidConnection = HidConnection.getInstance();
         try {
             String deviceId = hidConnection.getDevices()[0];
-            System.err.println("Device id:" + deviceId);
+            System.err.println("Device id: " + deviceId);
             byte[] message = new byte[1];
             message[0] = COMMAND_GET_KEYMAP;
             byte[] response = hidConnection.sendRequest(deviceId, message, 500);

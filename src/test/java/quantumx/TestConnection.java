@@ -11,6 +11,7 @@ public class TestConnection {
         while (true) {
             System.err.println("scan");
             for (String c : connection.getDevices()) {
+                System.err.println(c);
             }
             Thread.sleep(2000);
         }

@@ -1,5 +1,6 @@
 #include "quantumx_HidConnection.h"
 #include "hid.h"
+#include <stdio.h>
 
 
 JNIEXPORT jboolean JNICALL Java_quantumx_HidConnection_open
