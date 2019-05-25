@@ -36,7 +36,7 @@
 #include <IOKit/hid/IOHIDLib.h>
 #include <IOKit/hid/IOHIDKeys.h>
 #include <string.h>
-#include "hid.h"
+#include "../hid.h"
 #include <time.h>
 
 #define BUFFER_SIZE 64
@@ -433,17 +433,17 @@ static void detach_callback(void *context, IOReturn r, void *hid_mgr, IOHIDDevic
 	}
 }
 
-static seed = 0;
+static int seed = 0;
 static const char* rand_id() {
     if (seed == 0) {
         srand(time(NULL));
         seed = 1;
     }
     int len = 16;
-    char gen[] = {"abcdefghijklmnopqrstuvwxyz"};
+    char *gen = "abcdefghijklmnopqrstuvwxyz";
     char *result = malloc(len + 1);
     for (int i = 0; i < len; i++) {
-        result[i] = gen[rand() % sizeof(gen)];
+        result[i] = gen[rand() % strlen(gen)];
     }
     result[len] = '\0';
     return result;
