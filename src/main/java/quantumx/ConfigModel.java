@@ -14,6 +14,8 @@ import java.util.List;
 public class ConfigModel {
     private byte COMMAND_SET_KEYMAP = 1;
     private byte COMMAND_GET_KEYMAP = 2;
+    private byte COMMAND_SET_KEYBOARD_NAME = 3;
+    private byte COMMAND_GET_KEYBOARD_NAME = 4;
 
     private Stage stage;
     private LayerMap layerMap;
@@ -153,5 +155,40 @@ public class ConfigModel {
             stringBuffer.append(String.format("0x%02x ", b));
         }
         return stringBuffer.toString();
+    }
+
+    public void setKeyboardName(String name) {
+        HidConnection hidConnection = HidConnection.getInstance();
+        try {
+            String deviceId = hidConnection.getDevices()[0];
+            System.err.println("Device id:" + deviceId);
+
+            byte[] nameArr = name.getBytes();
+            byte[] message = new byte[nameArr.length + 1];
+            message[0] = COMMAND_SET_KEYBOARD_NAME;
+            System.arraycopy(nameArr, 0, message,1 , nameArr.length);
+            byte[] response = hidConnection.sendRequest(deviceId, message, 500);
+            System.err.println("response size " + response.length);
+            Utils.printByteArray(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getKeyboardName() {
+        HidConnection hidConnection = HidConnection.getInstance();
+        try {
+            String deviceId = hidConnection.getDevices()[0];
+            System.err.println("Device id:" + deviceId);
+            byte[] message = new byte[1];
+            message[0] = COMMAND_GET_KEYBOARD_NAME;
+            byte[] response = hidConnection.sendRequest(deviceId, message, 500);
+            System.err.println("response size " + response.length);
+            String name = new String(response);
+            return name;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
