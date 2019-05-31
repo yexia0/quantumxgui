@@ -17,36 +17,12 @@ import static javafx.concurrent.Worker.State;
 
 public class Main extends Application {
 
-    private static void testHid() {
-        HidConnection hidConnection = HidConnection.getInstance();
-        hidConnection.open();
-        int a = 0;
-        while (a < 10000) {
-            System.err.println("get models");
-            for (String s : hidConnection.getDevices()) {
-                System.err.println(s);
-                byte[] arr = new byte[64];
-                arr[0] = 'a';
-                try {
-                    byte[] result = hidConnection.sendRequest(s, "abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890".getBytes(), 100);
-                    System.err.println(result.length);
-                    for (int i = 0; i < result.length; i++) {
-                        System.err.printf("%02x ", result[i]);
-                    }
-                    System.err.println();
-                } catch (NoResponseException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-
-            }
-        }
-    }
     public static void main(String[] args) {
         System.loadLibrary("connection");
+        HidConnection hidConnection = HidConnection.getInstance();
+        for (String device : hidConnection.getAllDevices()) {
+            new ConsoleLogThread(device).start();
+        }
         Application.launch(args);
     }
 

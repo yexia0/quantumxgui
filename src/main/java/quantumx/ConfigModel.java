@@ -106,7 +106,7 @@ public class ConfigModel {
         HidConnection hidConnection = HidConnection.getInstance();
         try {
             byte[] layerMapBytes = layerMap.toBytes();
-            String deviceId = hidConnection.getDevices()[0];
+            String deviceId = hidConnection.getAllDevices()[0];
             System.err.println("Device id: " + deviceId);
             byte[] message = new byte[layerMapBytes.length + 1];
             message[0] = COMMAND_SET_KEYMAP;
@@ -120,7 +120,7 @@ public class ConfigModel {
     public void loadFromDevice() {
         HidConnection hidConnection = HidConnection.getInstance();
         try {
-            String deviceId = hidConnection.getDevices()[0];
+            String deviceId = hidConnection.getAllDevices()[0];
             System.err.println("Device id: " + deviceId);
             byte[] message = new byte[1];
             message[0] = COMMAND_GET_KEYMAP;
@@ -160,7 +160,7 @@ public class ConfigModel {
     public void setKeyboardName(String name) {
         HidConnection hidConnection = HidConnection.getInstance();
         try {
-            String deviceId = hidConnection.getDevices()[0];
+            String deviceId = hidConnection.getAllDevices()[0];
             System.err.println("Device id:" + deviceId);
 
             byte[] nameArr = name.getBytes();
@@ -178,7 +178,7 @@ public class ConfigModel {
     public String getKeyboardName() {
         HidConnection hidConnection = HidConnection.getInstance();
         try {
-            String deviceId = hidConnection.getDevices()[0];
+            String deviceId = hidConnection.getAllDevices()[0];
             System.err.println("Device id:" + deviceId);
             byte[] message = new byte[1];
             message[0] = COMMAND_GET_KEYBOARD_NAME;

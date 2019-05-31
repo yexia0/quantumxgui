@@ -17,6 +17,14 @@ JNIEXPORT jboolean JNICALL Java_quantumx_HidConnection_open
 
 /*
  * Class:     quantumx_HidConnection
+ * Method:    eventLoopForever
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_quantumx_HidConnection_eventLoopForever
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     quantumx_HidConnection
  * Method:    getDevices
  * Signature: ()[Ljava/lang/String;
  */
@@ -38,6 +46,14 @@ JNIEXPORT jbyteArray JNICALL Java_quantumx_HidConnection_receiveMessage
  */
 JNIEXPORT jboolean JNICALL Java_quantumx_HidConnection_sendMessage
   (JNIEnv *, jobject, jstring, jbyteArray, jint);
+
+/*
+ * Class:     quantumx_HidConnection
+ * Method:    getConsoleLog
+ * Signature: (Ljava/lang/String;I)[B
+ */
+JNIEXPORT jbyteArray JNICALL Java_quantumx_HidConnection_getConsoleLog
+  (JNIEnv *, jobject, jstring, jint);
 
 #ifdef __cplusplus
 }

@@ -2,7 +2,9 @@ package quantumx;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class HidConnection {
     private static int MAX_BODY_SIZE = 2048;
@@ -14,13 +16,30 @@ public class HidConnection {
         return _instance;
     }
     private HidConnection() {
-        open();
+        new Thread(()-> {open(); eventLoopForever();
+
+        }).start();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-    public native synchronized boolean open();
-    public native String[] getDevices();
+
+    private native synchronized boolean open();
+    private native void eventLoopForever();
+    private native String[] getDevices();
     private native byte[] receiveMessage(String deviceId, int timeout);
     private native boolean sendMessage(String deviceId, byte[] msg, int timeout);
+    public native byte[] getConsoleLog(String deviceId, int timeout);
 
+    public String[] getAllDevices() {
+        Set<String> result = new HashSet<>();
+        for (String id : getDevices()) {
+            result.add(id);
+        }
+        return result.toArray(new String[0]);
+    }
     public synchronized byte[] sendRequest(String deviceId, byte[] request, int timeout) throws NoResponseException {
         System.err.println("request size " + request.length);
         int reportSize = 64;

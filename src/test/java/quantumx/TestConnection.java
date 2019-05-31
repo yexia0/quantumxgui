@@ -7,13 +7,18 @@ public class TestConnection {
     public void testConnection() throws InterruptedException {
         System.loadLibrary("connection");
         HidConnection connection = HidConnection.getInstance();
-        connection.open();
+        //connection.open();
         while (true) {
             System.err.println("scan");
-            for (String c : connection.getDevices()) {
+            Thread.sleep(1000);
+            for (String c : connection.getAllDevices()) {
+                (new ConsoleLogThread(c)).start();
                 System.err.println(c);
             }
-            Thread.sleep(2000);
+            //while (true) {
+            //    connection.getAllDevices();
+            //}
+Thread.sleep(10000000);
         }
     }
 
