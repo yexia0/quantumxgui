@@ -21,7 +21,7 @@ public class Main extends Application {
         System.loadLibrary("connection");
         HidConnection hidConnection = HidConnection.getInstance();
         for (String device : hidConnection.getAllDevices()) {
-            new ConsoleLogThread(device).start();
+            //new ConsoleLogThread(device).start();
         }
         Application.launch(args);
     }
@@ -68,7 +68,7 @@ public class Main extends Application {
 
         VBox root = new VBox();
         root.getChildren().add(webView);
-        Scene scene = new Scene(root, 1000, 650);
+        Scene scene = new Scene(root, 1200, 650);
         stage.setScene(scene);
         stage.show();
     }

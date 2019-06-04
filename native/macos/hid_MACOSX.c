@@ -125,7 +125,7 @@ int get_devices(const char**buf, int limit) {
 //
 int rawhid_recv(const char *device_id, Channel channel, void *buf, int len, int timeout)
 {
-    printf("hid_recv\n");
+    //printf("hid_recv\n");
     hid_lock();
 
 	hid_t *hid;

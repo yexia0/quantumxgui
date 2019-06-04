@@ -10,34 +10,57 @@
     <script src="js/bootstrap-4.0.0.min.js" crossorigin="anonymous"></script>
 </header>
 <body>
-    <div>
-        <span>Quantum Keymap Manager</span>
-        <div class="dropdown" style="display:inline">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Dropdown button
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="menu">
-                <button class="dropdown-item" onclick="saveToFile();">Save to File...</button>
-                <button class="dropdown-item" onclick="loadFromFile()">Load from File...</button>
-                <button class="dropdown-item" onclick="deployToDevice()">Deploy</button>
-                <button class="dropdown-item" onclick="loadFromDevice()">Get From Device</button>
-                <div class="dropdown-divider"></div>
-                <button class="dropdown-item" type="button" disabled>New Keymap</button>
+    <div id="devicelist">
+        <div>Device List</div>
+        <div id="devices">
 
-            </div>
         </div>
+        <button onclick="loadDeviceList();">Reload</button>
     </div>
-
-    <ul class="nav nav-tabs" id="layernav">
+    <div id="deviceshow">
+    <ul class="nav nav-tabs" id="mainnav">
         <li class="nav-item">
-            <a class="nav-link disabled" href="#">Keymap not Loaded</a>
+            <a class="nav-link" href="#" onclick="showKeys()">Key Map</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" onclick="showConsole();">Console</a>
         </li>
     </ul>
-    <div id="keymap">
-    </div>
+
+    <div id="keys">
+        <div>
+            <span>Quantum Keymap Manager</span>
+            <div class="dropdown" style="display:inline">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Dropdown button
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="menu">
+                    <button class="dropdown-item" onclick="saveToFile();">Save to File...</button>
+                    <button class="dropdown-item" onclick="loadFromFile()">Load from File...</button>
+                    <button class="dropdown-item" onclick="deployToDevice()">Deploy</button>
+                    <button class="dropdown-item" onclick="loadFromDevice()">Get From Device</button>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" type="button" disabled>New Keymap</button>
+
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs" id="layernav">
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">Keymap not Loaded</a>
+            </li>
+        </ul>
+        <div id="keymap">
+        </div>
         <div>
             <div id="editor" height="100"></div>
         </div>
+    </div>
 
+    <div id="console">
+
+    </div>
+    </div>
 </body>
 </html>

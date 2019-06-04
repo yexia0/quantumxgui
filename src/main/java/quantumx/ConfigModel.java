@@ -9,6 +9,8 @@ import org.apache.commons.io.IOUtils;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ConfigModel {
@@ -23,6 +25,9 @@ public class ConfigModel {
     private FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("Keymap Model (*.kmm)", "*.kmm");
     private FileChooser fileChooser;
     private List<ProductInfo> productInfos;
+
+    private ConsoleLogThread consoleLogThread;
+
     public ConfigModel(Stage stage) {
         this.stage = stage;
         fileChooser = new FileChooser();
@@ -190,5 +195,27 @@ public class ConfigModel {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public List<String> getDevices() {
+        HidConnection hidConnection = HidConnection.getInstance();
+        List<String> result = new ArrayList<>();
+        for (String d : hidConnection.getAllDevices()) {
+            result.add(d);
+        }
+        return result;
+    }
+
+    public synchronized void startConsoleMonitor(String deviceId) {
+        if (consoleLogThread != null) {
+            consoleLogThread.interrupt();
+            consoleLogThread = null;
+        }
+        consoleLogThread = new ConsoleLogThread(deviceId);
+        consoleLogThread.start();
+    }
+
+    public synchronized List<String> getConsoleLogLines() {
+        return consoleLogThread.getNextLines();
     }
 }

@@ -1,9 +1,100 @@
 var products;
 var product;
 var scale;
+var consoleJob;
+
+function attachConsoleLog(deviceId) {
+    model.startConsoleMonitor(deviceId);
+    if (consoleJob != undefined) {
+        clearInterval(consoleJob);
+    }
+    $("#console").empty();
+    consoleJob = setInterval(fetchDeviceLog, 100);
+}
+
+function fetchDeviceLog() {
+    var lines = model.getConsoleLogLines();
+    for (var i = 0; i < lines.size(); i++) {
+        $("#console").append($("<div>").text(lines.get(i)));
+    }
+}
+
+function showKeys() {
+    $("#console").hide();
+    $("#keys").show();
+}
+
+function showConsole() {
+    $("#keys").hide();
+    $("#console").show();
+}
+
+function loadDeviceList() {
+    console.log("Current selected id is " + getSelectedDeviceId());
+    $("#devices").children().each(
+        function() {
+            if ($(this).data("deviceId") != getSelectedDeviceId()) {
+                console.log("remove");
+                $(this).remove();
+            }
+        }
+    )
+    console.log($("#devices").children().length);
+    console.log($("#devices").html());
+    var devices = model.getDevices();
+    var selectFound = false;
+    for (var i = 0; i < devices.size(); i++) {
+        var deviceId = devices.get(i);
+        var deviceName = model.getKeyboardName();
+        if (deviceName == "") {
+            deviceName = "(Unnamed)"
+        }
+        if (deviceId == getSelectedDeviceId()){
+            selectFound = true;
+            getSelectedDeviceNode().data("name", deviceName).html(deviceName);
+            continue;
+        }
+
+        var deviceNode = $("<div>").data("deviceId", deviceId).data("name", deviceName).html(deviceName).click(
+            function() {
+                console.log(deviceId + " selected");
+                attachConsoleLog(deviceId);
+                setSelectedDeviceId($(this).data("deviceId"));
+                setSelectedDeviceNode($(this));
+            }
+        );
+        $("#devices").append(deviceNode);
+    }
+    if (!selectFound) {
+        var detachedNode = getSelectedDeviceNode();
+        if (detachedNode != undefined) {
+            detachedNode.html(detachedNode.data("name") + " (Disconnected)");
+        }
+    }
+
+}
+
+function getSelectedDeviceId() {
+    return $("#devices").data("selected");
+}
+
+function setSelectedDeviceId(id) {
+    $("#devices").data("selected", id);
+}
+
+function getSelectedDeviceNode() {
+    return $("#devices").data("node");
+}
+
+function setSelectedDeviceNode(node) {
+    $("#devices").data("node", node);
+}
+
 
 function init() {
     console.log("init");
+    loadDeviceList();
+    $("#console").hide();
     for (var i = 0; i < products.size(); i++) {
         var newKeymapButton = $("<a>").attr("href", "#").text(products.get(i).getDescription()).addClass("dropdown-item").data("modelId", products.get(i).getModelId()).click(newKeymap);
         $("#menu").append(newKeymapButton);
