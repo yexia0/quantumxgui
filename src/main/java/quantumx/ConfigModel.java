@@ -2,6 +2,9 @@ package quantumx;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TextInputDialog;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
@@ -12,6 +15,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class ConfigModel {
     private byte COMMAND_SET_KEYMAP = 1;
@@ -46,6 +50,17 @@ public class ConfigModel {
         layerMap.setModelId(modelId);
         layerMap.setNumLayers(6);
         layerMap.setNumKeys(numKeys);
+    }
+
+    public boolean confirmSwitchDevice() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText(null);
+        alert.setGraphic(null);
+        alert.setContentText("All unsaved keymap change will be lost. Are you sure to switch device?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        return result.get() == ButtonType.OK;
     }
 
     public void setNumLayers(short n) {
@@ -107,11 +122,29 @@ public class ConfigModel {
         }
     }
 
-    public void deploy() {
+    public void changeDeviceName(String deviceId) {
+        String currentName = getKeyboardName(deviceId);
+
+        TextInputDialog dialog = new TextInputDialog(currentName);
+        dialog.setHeaderText(null);
+        dialog.setGraphic(null);
+        dialog.setTitle("Rename keyboard");
+        dialog.setContentText("Please enter new name: ");
+
+        Optional<String> result = dialog.showAndWait();
+        if (result.isPresent()){
+            setKeyboardName(deviceId, result.get());
+            System.out.println("New name: " + result.get());
+        }
+    }
+
+    public void deploy(String deviceId) {
+        if (!getDevices().contains(deviceId)) {
+            return;
+        }
         HidConnection hidConnection = HidConnection.getInstance();
         try {
             byte[] layerMapBytes = layerMap.toBytes();
-            String deviceId = hidConnection.getAllDevices()[0];
             System.err.println("Device id: " + deviceId);
             byte[] message = new byte[layerMapBytes.length + 1];
             message[0] = COMMAND_SET_KEYMAP;
@@ -122,10 +155,12 @@ public class ConfigModel {
         }
     }
 
-    public void loadFromDevice() {
+    public void loadFromDevice(String deviceId) {
+        if (!getDevices().contains(deviceId)) {
+            return;
+        }
         HidConnection hidConnection = HidConnection.getInstance();
         try {
-            String deviceId = hidConnection.getAllDevices()[0];
             System.err.println("Device id: " + deviceId);
             byte[] message = new byte[1];
             message[0] = COMMAND_GET_KEYMAP;
@@ -162,12 +197,12 @@ public class ConfigModel {
         return stringBuffer.toString();
     }
 
-    public void setKeyboardName(String name) {
+    public void setKeyboardName(String deviceId, String name) {
+        if (!getDevices().contains(deviceId)) {
+            return;
+        }
         HidConnection hidConnection = HidConnection.getInstance();
         try {
-            String deviceId = hidConnection.getAllDevices()[0];
-            System.err.println("Device id:" + deviceId);
-
             byte[] nameArr = name.getBytes();
             byte[] message = new byte[nameArr.length + 1];
             message[0] = COMMAND_SET_KEYBOARD_NAME;
@@ -180,11 +215,9 @@ public class ConfigModel {
         }
     }
 
-    public String getKeyboardName() {
+    public String getKeyboardName(String deviceId) {
         HidConnection hidConnection = HidConnection.getInstance();
         try {
-            String deviceId = hidConnection.getAllDevices()[0];
-            System.err.println("Device id:" + deviceId);
             byte[] message = new byte[1];
             message[0] = COMMAND_GET_KEYBOARD_NAME;
             byte[] response = hidConnection.sendRequest(deviceId, message, 500);
@@ -207,6 +240,9 @@ public class ConfigModel {
     }
 
     public synchronized void startConsoleMonitor(String deviceId) {
+        if (!getDevices().contains(deviceId)) {
+            return;
+        }
         if (consoleLogThread != null) {
             consoleLogThread.interrupt();
             consoleLogThread = null;

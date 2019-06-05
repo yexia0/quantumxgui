@@ -26,8 +26,8 @@ Thread.sleep(10000000);
     public void testKeyboardName() {
         System.loadLibrary("connection");
         ConfigModel configModel = new ConfigModel(null);
-        configModel.setKeyboardName("hello");
-        System.err.println(configModel.getKeyboardName());
+        //configModel.setKeyboardName("hello");
+        //System.err.println(configModel.getKeyboardName());
     }
 
 }

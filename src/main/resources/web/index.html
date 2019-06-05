@@ -10,35 +10,31 @@
     <script src="js/bootstrap-4.0.0.min.js" crossorigin="anonymous"></script>
 </header>
 <body>
-    <div id="devicelist">
+    <div id="leftpane">
         <div>Device List</div>
+        <button onclick="loadDeviceList();">Reload</button>
         <div id="devices">
 
         </div>
-        <button onclick="loadDeviceList();">Reload</button>
+        <div id="console">
+
+        </div>
     </div>
-    <div id="deviceshow">
-    <ul class="nav nav-tabs" id="mainnav">
-        <li class="nav-item">
-            <a class="nav-link" href="#" onclick="showKeys()">Key Map</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#" onclick="showConsole();">Console</a>
-        </li>
-    </ul>
+    <div id="rightpane">
 
     <div id="keys">
         <div>
             <span>Quantum Keymap Manager</span>
             <div class="dropdown" style="display:inline">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Dropdown button
+                    Actions
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="menu">
-                    <button class="dropdown-item" onclick="saveToFile();">Save to File...</button>
-                    <button class="dropdown-item" onclick="loadFromFile()">Load from File...</button>
-                    <button class="dropdown-item" onclick="deployToDevice()">Deploy</button>
-                    <button class="dropdown-item" onclick="loadFromDevice()">Get From Device</button>
+                    <button class="dropdown-item" onclick="renameDevice();">Rename Device...</button>
+                    <button class="dropdown-item" onclick="saveToFile();">Save Keymap to File...</button>
+                    <button class="dropdown-item" onclick="loadFromFile()">Load Keymap from File...</button>
+                    <button class="dropdown-item" onclick="deployToDevice()">Deploy Keymap to Device</button>
+                    <button class="dropdown-item" onclick="loadFromDevice()">Get Keymap from Device</button>
                     <div class="dropdown-divider"></div>
                     <button class="dropdown-item" type="button" disabled>New Keymap</button>
 
@@ -58,9 +54,28 @@
         </div>
     </div>
 
-    <div id="console">
 
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

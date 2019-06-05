@@ -11,6 +11,7 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebErrorEvent;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import netscape.javascript.JSObject;
 
 import static javafx.concurrent.Worker.State;
@@ -68,8 +69,14 @@ public class Main extends Application {
 
         VBox root = new VBox();
         root.getChildren().add(webView);
-        Scene scene = new Scene(root, 1200, 650);
+        Scene scene = new Scene(root, 1250, 650);
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                System.exit(0);
+            }
+        });
     }
 }

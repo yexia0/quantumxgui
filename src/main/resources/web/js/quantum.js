@@ -19,15 +19,6 @@ function fetchDeviceLog() {
     }
 }
 
-function showKeys() {
-    $("#console").hide();
-    $("#keys").show();
-}
-
-function showConsole() {
-    $("#keys").hide();
-    $("#console").show();
-}
 
 function loadDeviceList() {
     console.log("Current selected id is " + getSelectedDeviceId());
@@ -45,7 +36,7 @@ function loadDeviceList() {
     var selectFound = false;
     for (var i = 0; i < devices.size(); i++) {
         var deviceId = devices.get(i);
-        var deviceName = model.getKeyboardName();
+        var deviceName = model.getKeyboardName(deviceId);
         if (deviceName == "") {
             deviceName = "(Unnamed)"
         }
@@ -57,10 +48,24 @@ function loadDeviceList() {
 
         var deviceNode = $("<div>").data("deviceId", deviceId).data("name", deviceName).html(deviceName).click(
             function() {
-                console.log(deviceId + " selected");
-                attachConsoleLog(deviceId);
-                setSelectedDeviceId($(this).data("deviceId"));
-                setSelectedDeviceNode($(this));
+                // select device
+                var selectedId = $(this).data("deviceId");
+                var oldId = getSelectedDeviceId();
+                if (oldId != selectedId) {
+                    var toChange;
+                    //if (oldId == undefined) {
+                    //    toChange = true;
+                    //} else {
+                        toChange = model.confirmSwitchDevice();
+                    //}
+                    if (toChange) {
+                        console.log(deviceId + " selected");
+                        attachConsoleLog(deviceId);
+                        setSelectedDeviceId($(this).data("deviceId"));
+                        setSelectedDeviceNode($(this));
+                        loadFromDevice(selectedId);
+                    }
+                }
             }
         );
         $("#devices").append(deviceNode);
@@ -91,10 +96,14 @@ function setSelectedDeviceNode(node) {
 }
 
 
+function renameDevice() {
+    model.changeDeviceName(getSelectedDeviceId());
+    loadDeviceList();
+}
+
 function init() {
     console.log("init");
     loadDeviceList();
-    $("#console").hide();
     for (var i = 0; i < products.size(); i++) {
         var newKeymapButton = $("<a>").attr("href", "#").text(products.get(i).getDescription()).addClass("dropdown-item").data("modelId", products.get(i).getModelId()).click(newKeymap);
         $("#menu").append(newKeymapButton);
@@ -123,7 +132,7 @@ function newKeymap() {
 }
 
 function deployToDevice() {
-    model.deploy();
+    model.deploy(getSelectedDeviceId());
 }
 
 function saveToFile() {
@@ -141,7 +150,7 @@ function loadFromFile() {
 }
 
 function loadFromDevice() {
-    model.loadFromDevice();
+    model.loadFromDevice(getSelectedDeviceId());
     var modelId = model.getModelId();
     console.log(modelId);
     if (assignProduct(modelId) != undefined) {
