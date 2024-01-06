@@ -98,8 +98,23 @@ var keycodeMap = [
     "Keypad 8",
     "Keypad 9",
     "Keypad 0",
-    "Keypad ."
-
+    "Keypad .",
+    "102ND",
+    "COMPOSE",
+    "POWER",
+    "Keypad Equal",
+    "F13",
+    "F14",
+    "F15",
+    "F16",
+    "F17",
+    "F18",
+    "F19",
+    "F20",
+    "F21",
+    "F22",
+    "F23",
+    "F24"
 ]
 
 var modifierCodeMap = [];
@@ -108,9 +123,9 @@ modifierCodeMap[0x02] = "Left Shift";
 modifierCodeMap[0x04] = "Left Alt";
 modifierCodeMap[0x08] = "Left Gui";
 modifierCodeMap[0x10] = "Right Control";
-modifierCodeMap[0x20] = "Left Shift";
-modifierCodeMap[0x40] = "Left Alt";
-modifierCodeMap[0x80] = "Left Gui";
+modifierCodeMap[0x20] = "Right Shift";
+modifierCodeMap[0x40] = "Right Alt";
+modifierCodeMap[0x80] = "Right Gui";
 
 function keyCodeToText(code) {
     return keycodeMap[code];

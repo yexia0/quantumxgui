@@ -657,7 +657,7 @@ function loadKeyToEditor(layer, key) {
     var keySelector = $("<select>").attr("id", "keySelector");
     keySelector.append(newOption(0, "Select Key..."));
 
-    for (var k = 4; k <= 99; k++) {
+    for (var k = 4; k <= 115; k++) {
         keySelector.append(newOption(k, keyCodeToText(k)));
     }
 
@@ -671,19 +671,19 @@ function loadKeyToEditor(layer, key) {
     comboSelector.append(newOption(0x00, "Select Modifiers..."));
     comboSelector.append(newOption(0x11, "Control"));
     comboSelector.append(newOption(0x22, "Shift"));
-    comboSelector.append(newOption(0x44, "Alt"));
+    comboSelector.append(newOption(0x04, "Alt"));
     comboSelector.append(newOption(0x88, "Gui"));
     comboSelector.append(newOption(0x33, "Control Shift"));
-    comboSelector.append(newOption(0x55, "Control Alt"));
+    comboSelector.append(newOption(0x15, "Control Alt"));
     comboSelector.append(newOption(0x99, "Control Gui"));
-    comboSelector.append(newOption(0x66, "Alt Shift"));
-    comboSelector.append(newOption(0xCC, "Alt Gui"));
+    comboSelector.append(newOption(0x26, "Alt Shift"));
+    comboSelector.append(newOption(0x8C, "Alt Gui"));
     comboSelector.append(newOption(0xAA, "Shift Gui"));
-    comboSelector.append(newOption(0x77, "Control Alt Shift"));
-    comboSelector.append(newOption(0xDD, "Control Alt Gui"));
+    comboSelector.append(newOption(0x37, "Control Alt Shift"));
+    comboSelector.append(newOption(0x9D, "Control Alt Gui"));
     comboSelector.append(newOption(0xBB, "Control Shift Gui"));
-    comboSelector.append(newOption(0xEE, "Alt Shift Gui"));
-    comboSelector.append(newOption(0xFF, "Control Alt Shift Gui"));
+    comboSelector.append(newOption(0xAE, "Alt Shift Gui"));
+    comboSelector.append(newOption(0xBF, "Control Alt Shift Gui"));
 
     var layerSelector = $("<select>").attr("id", "layerSelector");
     var numLayers = $("#layernav").data("layer");
